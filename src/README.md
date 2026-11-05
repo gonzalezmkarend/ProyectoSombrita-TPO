@@ -28,6 +28,7 @@ Constantes y funciones que usan todos los módulos: fechas, ordenamiento, consul
 | `_leer_texto` | Solicita un texto no vacío por teclado. |
 | `_leer_fecha` | Solicita una fecha "dd/mm/aaaa" por teclado hasta que sea válida. |
 | `_leer_rango_fechas` | Solicita dos fechas, desde y hasta, hasta que formen un rango válido. |
+| `_limpiar_consola` | Limpia la consola, utilizando el comando correspondiente al sistema operativo. |
 
 ## persistencia.py
 

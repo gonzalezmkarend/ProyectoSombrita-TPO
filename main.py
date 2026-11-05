@@ -9,6 +9,7 @@ from src.comunes import (
     _mostrar_error,
     _mostrar_exito,
     _mostrar_menu,
+    _limpiar_consola,
 )
 from src.menu_carpas import _menu_carpas
 from src.menu_estadisticas import _menu_estadisticas
@@ -34,6 +35,7 @@ def main() -> None:
 
     try:
         while True:
+            _limpiar_consola()
             _mostrar_menu(
                 "===== Sombrita: gestión de carpas del balneario =====",
                 [

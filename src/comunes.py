@@ -2,6 +2,7 @@
 # Este módulo no importa a ningún otro módulo del proyecto.
 
 import os
+import subprocess
 from datetime import datetime
 from typing import Any, Callable
 
@@ -347,3 +348,20 @@ def _leer_rango_fechas() -> tuple[str, str]:
         _mostrar_error(
             "Error: la fecha 'desde' no puede ser posterior a la fecha 'hasta'."
         )
+
+
+def _limpiar_consola() -> None:
+    """
+    Contrato:
+        Borra el contenido visible de la consola, usando el comando 
+        propio del sistema operativo ("cls" en Windows, "clear" en 
+        Linux y Mac).
+    
+    Precondiciones:
+        Se ejecuta desde una terminal o consola.
+        Los módulos os y subprocess están importados.
+    
+    Postcondiciones:
+        La consola queda limpia. No devuele ningún valor.
+    """
+    subprocess.run("cls" if os.name == "nt" else "clear", shell=True)
