@@ -1,0 +1,39 @@
+Etapa 1:
+	- Que hace nuestro Sistema: Automatiza la gestion de alquiler de carpas de un balneario.	
+					
+		
+		- Ingresar carpas.		### CRUD
+		
+		- Ver/Consultar carpas.		### CRUD
+		
+		- Borrar/Inactivar carpas.	### CRUD
+		
+		- Editar/Modificar carpas.	### CRUD
+			- Número de carpa.
+			- Alta y baja de reservas.	 → Relativo a fecha ☺ ### Consultar si esta reservada la carpa N la 2da quincena de enero.
+			- Alta y baja de alquiler.	 → Relativo a fecha ☺ ### Consultar si esta alquilada la carpa N la 2da quincena de enero.
+			- Alta y baja de activa/inactiva.
+
+		
+		
+
+		Cliente:
+			- Ingresar datos del cliente.
+			- Consultar carpa del cliente.
+			-
+		
+		-Notiifcaciones push:
+			- Mostrar las reservas del dia. (Reserva no es alquiler) Reserva, no esta pago o esta señado // Alquiler es pago
+
+	-Que NO hace nuestro Sistema:
+
+		-Gestion de cobros. (WON'T)
+
+
+TIPOS DE DATOS:
+	
+	- Carpa: Tupla(num_carpa: int, es_reservada: bool, es_alquilada: bool, es_activa: bool)
+
+tuple(lista[])
+tupla[1].append("1")
+	
