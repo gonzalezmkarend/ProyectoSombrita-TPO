@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CarpaGest · Gestión de carpas para balnearios</title>
+
+  <!-- Reveal.js desde CDN (no requiere instalación) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css" id="theme">
+
+  <!-- Tipografía -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================================================
+       Paleta corporativa
+       ========================================================= */
+    :root {
+      --navy:     #0b2545;
+      --navy-2:   #13315c;
+      --ocean:    #1b6ca8;
+      --sky:      #e8f1fa;
+      --sand:     #f7f3ea;
+      --sun:      #f2a541;
+      --coral:    #e5533c;
+      --leaf:     #2e9e6b;
+      --ink:      #1f2933;
+      --muted:    #5f6b7a;
+      --line:     #dfe5ec;
+      --white:    #ffffff;
+      --radius:   16px;
+      --shadow:   0 10px 30px rgba(11, 37, 69, 0.08);
+    }
+
+    /* =========================================================
+       Base Reveal
+       ========================================================= */
+    .reveal {
+      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 28px;
+      color: var(--ink);
+    }
+    .reveal .slides { text-align: left; }
+    .reveal .slides section { padding: 0 40px; box-sizing: border-box; }
+
+    .reveal h1, .reveal h2, .reveal h3 {
+      font-family: 'Inter', sans-serif;
+      text-transform: none;
+      letter-spacing: -0.02em;
+      color: var(--navy);
+      margin-bottom: 0.4em;
+    }
+    .reveal h1 { font-size: 2.6em; font-weight: 800; line-height: 1.1; }
+    .reveal h2 { font-size: 1.7em; font-weight: 700; }
+    .reveal h3 { font-size: 1.05em; font-weight: 600; color: var(--navy-2); }
+    .reveal p  { line-height: 1.5; }
+    .reveal ul { margin-left: 0; }
+    .reveal li { margin-bottom: 0.5em; line-height: 1.4; }
+    .reveal code, .reveal .mono {
+      font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+    }
+
+    /* Etiqueta pequeña sobre los títulos */
+    .kicker {
+      display: inline-block;
+      font-size: 0.55em;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ocean);
+      background: var(--sky);
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+    }
+
+    .lead { font-size: 1.05em; color: var(--muted); max-width: 22em; }
+
+    /* Barra de progreso y controles */
+    .reveal .progress { height: 5px; color: var(--ocean); }
+    .reveal .controls { color: var(--ocean); }
+    .reveal .slide-number { background: transparent; color: var(--muted); font-size: 16px; }
+
+    /* =========================================================
+       Layouts
+       ========================================================= */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 56px;
+      align-items: center;
+    }
+    .three-col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    /* =========================================================
+       Tarjetas
+       ========================================================= */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px 30px;
+      box-shadow: var(--shadow);
+    }
+    .card .icon { font-size: 1.6em; margin-bottom: 10px; }
+    .card h3 { margin: 0 0 8px; }
+    .card p { font-size: 0.72em; color: var(--muted); margin: 0; line-height: 1.45; }
+
+    .card.problem { border-top: 5px solid var(--coral); }
+    .card.solution { border-top: 5px solid var(--leaf); }
+
+    /* Lista de beneficios */
+    .benefits { list-style: none; padding: 0; font-size: 0.82em; }
+    .benefits li {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+    .benefits li .b-icon {
+      flex: 0 0 auto;
+      width: 40px; height: 40px;
+      display: grid; place-items: center;
+      border-radius: 10px;
+      background: var(--sky);
+      font-size: 0.9em;
+    }
+    .benefits li strong { color: var(--navy); }
+    .benefits li span.sub { display: block; color: var(--muted); font-size: 0.82em; margin-top: 2px; }
+
+    /* =========================================================
+       Simulaciones de interfaz (mock UI)
+       ========================================================= */
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      font-size: 0.62em;
+    }
+    .panel-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 16px;
+      background: var(--navy);
+      color: #cfe0f2;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .panel-bar .dots span {
+      display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+      margin-right: 5px; background: #4b6a8f;
+    }
+    .panel-bar .title { margin-left: 8px; }
+    .panel-body { padding: 18px; }
+
+    /* Mapa del balneario en forma de U (base frente al mar) */
+    .u-map {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(4, auto);
+      gap: 10px;
+    }
+    .u-map .sand {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      border: 2px dashed #e6d9b8;
+      border-radius: 12px;
+      background: repeating-linear-gradient(45deg, #fbf7ee 0 8px, #f5efe0 8px 16px);
+      color: #a08a5a; font-size: 1.6em;
+    }
+    .u-map .sand small { font-size: 0.5em; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 4px; }
+    .sea {
+      margin-bottom: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #1b6ca8, #2f8fd0);
+      color: #eaf4fc; font-weight: 600; letter-spacing: 0.04em; text-align: center;
+    }
+    .tent {
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      font-weight: 700;
+      border: 2px solid transparent;
+    }
+    .tent small { display: block; font-weight: 500; font-size: 0.8em; opacity: 0.8; margin-top: 2px; }
+    .tent.libre     { background: #e6f5ee; color: #1c7a4f; border-color: #bfe5d1; }
+    .tent.reservada { background: #fff3dc; color: #9a5b00; border-color: #f5d9a3; }
+    .tent.alquilada { background: #e3eefc; color: #1b4d8c; border-color: #b9d2f2; }
+    .tent.inactiva  { background: #f1f3f5; color: #8a949e; border-color: #dde2e7; text-decoration: line-through; }
+
+    .map-note { margin-top: 10px; color: var(--muted); font-size: 0.9em; line-height: 1.35; }
+    .legend { display: flex; gap: 16px; margin-top: 10px; color: var(--muted); }
+    .legend span::before {
+      content: ""; display: inline-block; width: 12px; height: 12px;
+      border-radius: 3px; margin-right: 6px; vertical-align: -1px;
+    }
+    .legend .l-libre::before { background: #2e9e6b; }
+    .legend .l-res::before   { background: #f2a541; }
+    .legend .l-alq::before   { background: #1b6ca8; }
+    .legend .l-ina::before   { background: #aab3bd; }
+
+    /* Tabla de reservas */
+    table.mock {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1em;
+    }
+    table.mock th {
+      text-align: left;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.85em;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 8px 10px;
+      border-bottom: 2px solid var(--line);
+    }
+    table.mock td { padding: 10px; border-bottom: 1px solid var(--line); }
+    .pill {
+      display: inline-block; padding: 3px 10px; border-radius: 999px;
+      font-size: 0.85em; font-weight: 600;
+    }
+    .pill.res { background: #fff3dc; color: #9a5b00; }
+    .pill.alq { background: #e3eefc; color: #1b4d8c; }
+
+    /* KPIs */
+    .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .kpi {
+      background: var(--sky);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .kpi .label { color: var(--muted); font-size: 0.85em; font-weight: 600; }
+    .kpi .value { font-size: 2.1em; font-weight: 800; color: var(--navy); line-height: 1.1; margin: 4px 0; }
+    .kpi .hint { color: var(--muted); font-size: 0.8em; }
+    .bar {
+      height: 10px; background: #d5e3f2; border-radius: 999px; overflow: hidden; margin-top: 8px;
+    }
+    .bar > i { display: block; height: 100%; width: 67%; background: var(--ocean); border-radius: 999px; }
+
+    /* =========================================================
+       Arquitectura
+       ========================================================= */
+    .arch {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      font-size: 0.72em;
+    }
+    .layer {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      align-items: center;
+      gap: 20px;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-left: 8px solid var(--ocean);
+      border-radius: 14px;
+      padding: 18px 22px;
+      box-shadow: var(--shadow);
+    }
+    .layer.ui    { border-left-color: var(--sun); }
+    .layer.logic { border-left-color: var(--ocean); }
+    .layer.data  { border-left-color: var(--leaf); }
+    .layer .name { font-weight: 800; color: var(--navy); font-size: 1.15em; }
+    .layer .name small { display: block; font-weight: 500; color: var(--muted); font-size: 0.8em; margin-top: 2px; }
+    .layer .desc { color: var(--ink); line-height: 1.45; }
+    .layer .desc code { background: var(--sand); padding: 2px 6px; border-radius: 6px; font-size: 0.92em; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; font-size: 0.66em; }
+    .chip {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-weight: 600;
+      color: var(--navy-2);
+    }
+
+    /* =========================================================
+       Portada y cierre
+       ========================================================= */
+    .cover {
+      display: flex; flex-direction: column; justify-content: center; min-height: 600px;
+    }
+    .cover .brand {
+      font-size: 0.6em; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(255,255,255,0.75); margin-bottom: 20px;
+    }
+    .cover h1 { color: var(--white); margin-bottom: 0.3em; }
+    .cover h1 .accent { color: var(--sun); }
+    .cover .sub { color: rgba(255,255,255,0.85); font-size: 1.05em; max-width: 24em; }
+    .cover .meta {
+      margin-top: 44px; display: flex; gap: 32px; font-size: 0.6em;
+      color: rgba(255,255,255,0.7);
+    }
+    .cover .meta strong { color: var(--white); display: block; font-size: 1.15em; }
+
+    .closing { text-align: center; display: flex; flex-direction: column; justify-content: center; min-height: 600px; }
+    .closing h1 { color: var(--white); }
+    .closing p  { color: rgba(255,255,255,0.85); }
+    .closing .big { font-size: 4em; margin-bottom: 0.15em; }
+
+    /* Fragmentos con una entrada más suave */
+    .reveal .fragment.fade-up { transition: all 0.4s ease; }
+  </style>
+</head>
+
+<body>
+<div class="reveal">
+  <div class="slides">
+
+    <!-- =====================================================
+         1. PORTADA
+         ===================================================== -->
+    <section data-background-gradient="linear-gradient(135deg, #0b2545 0%, #13315c 55%, #1b6ca8 100%)">
+      <div class="cover">
+        <div class="brand">🏖️ &nbsp;Sistema de gestión para balnearios</div>
+        <h1>CarpaGest<br><span class="accent">Tus carpas, bajo control.</span></h1>
+        <p class="sub">
+          Reservas sin choques, disponibilidad al instante y números claros
+          para tomar decisiones en temporada.
+        </p>
+        <div class="meta">
+          <div><strong>Programación I</strong>Trabajo Práctico Obligatorio · Etapa 1</div>
+          <div><strong>Núcleo funcional</strong>Carpas · Reservas · Estadísticas</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         2. EL PROBLEMA
+         ===================================================== -->
+    <section>
+      <span class="kicker">El problema</span>
+      <h2>Una temporada en el balneario, hoy</h2>
+      <p class="lead">Cuadernos, planillas sueltas y llamados. Cuando llegan enero y febrero, el caos se multiplica.</p>
+
+      <div class="three-col" style="margin-top: 28px;">
+        <div class="card problem">
+          <div class="icon">📓</div>
+          <h3>Reservas duplicadas</h3>
+          <p>Dos familias con la misma carpa, las mismas fechas y un solo lugar en la arena.</p>
+        </div>
+        <div class="card problem">
+          <div class="icon">🔍</div>
+          <h3>“¿Qué carpa está libre?”</h3>
+          <p>Responder una consulta simple implica revisar hoja por hoja y cruzar fechas a mano.</p>
+        </div>
+        <div class="card problem">
+          <div class="icon">📉</div>
+          <h3>Decidir a ciegas</h3>
+          <p>Sin saber la ocupación real ni quiénes son los mejores clientes, no hay forma de planificar.</p>
+        </div>
+      </div>
+
+      <div class="card solution" style="margin-top: 28px; display:flex; gap: 18px; align-items:center;">
+        <div class="icon" style="margin:0;">✅</div>
+        <p style="font-size: 0.85em; color: var(--ink);">
+          <strong>CarpaGest</strong> centraliza carpas, clientes y fechas en un único sistema que
+          <strong>valida cada operación</strong> antes de registrarla y responde al instante.
+        </p>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         3. MÓDULO CARPAS
+         ===================================================== -->
+    <section>
+      <span class="kicker">Módulo 1 · Carpas</span>
+      <h2>Tu inventario, siempre ordenado</h2>
+
+      <div class="two-col">
+        <div>
+          <ul class="benefits">
+            <li class="fragment fade-up">
+              <div class="b-icon">➕</div>
+              <div><strong>Alta de carpas en segundos</strong>
+                <span class="sub">Número único, validado: no se pueden cargar duplicados ni valores inválidos.</span></div>
+            </li>
+            <li class="fragment fade-up">
+              <div class="b-icon">🗺️</div>
+              <div><strong>Mapeo simple, fiel a tu arena</strong>
+                <span class="sub">Cargás cada carpa con su sector y posición y el mapa se arma solo. Cada balneario tiene su propia U: el sistema se adapta.</span></div>
+            </li>
+            <li class="fragment fade-up">
+              <div class="b-icon">🛠️</div>
+              <div><strong>Mantenimiento sin borrar historial</strong>
+                <span class="sub">Activá o inactivá carpas (rotas, en reparación). Nunca se pierde información.</span></div>
+            </li>
+            <li class="fragment fade-up">
+              <div class="b-icon">📅</div>
+              <div><strong>Estado por fechas al instante</strong>
+                <span class="sub">Libre, reservada o alquilada para cualquier rango de días, calculado en tiempo real.</span></div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <div class="panel-bar">
+            <span class="dots"><span></span><span></span><span></span></span>
+            <span class="title">Mapa del balneario · 16/01/2027 → 31/01/2027</span>
+          </div>
+          <div class="panel-body">
+            <div class="sea">🌊 &nbsp;MAR &nbsp;·&nbsp;</div>
+            <div class="u-map">
+              <!-- 1er cuerpo (lateral izquierdo): 01 junto al mar, hacia la base -->
+              <div class="tent alquilada" style="grid-column:1; grid-row:1;">01<small>alquilada</small></div>
+              <div class="tent libre"     style="grid-column:1; grid-row:2;">02<small>libre</small></div>
+              <div class="tent alquilada" style="grid-column:1; grid-row:3;">03<small>alquilada</small></div>
+              <!-- Centro: paso / arena -->
+              <div class="sand" style="grid-column:2 / 5; grid-row:1 / 4;">🏖️<small>patio central</small></div>
+              <!-- 3er cuerpo (lateral derecho): de la base hacia el mar -->
+              <div class="tent libre"     style="grid-column:5; grid-row:1;">11<small>libre</small></div>
+              <div class="tent inactiva"  style="grid-column:5; grid-row:2;">10<small>inactiva</small></div>
+              <div class="tent libre"     style="grid-column:5; grid-row:3;">09<small>libre</small></div>
+              <!-- 2do cuerpo (base de la U): 04 → 08 -->
+              <div class="tent libre"     style="grid-column:1; grid-row:4;">04<small>libre</small></div>
+              <div class="tent reservada" style="grid-column:2; grid-row:4;">05<small>reservada</small></div>
+              <div class="tent reservada" style="grid-column:3; grid-row:4;">06<small>reservada</small></div>
+              <div class="tent libre"     style="grid-column:4; grid-row:4;">07<small>libre</small></div>
+              <div class="tent libre"     style="grid-column:5; grid-row:4;">08<small>libre</small></div>
+            </div>
+            <div class="map-note">1er cuerpo 01–03 (lateral, del mar hacia la base) · 2do cuerpo 04–08 (base) · 3er cuerpo 09–11 (lateral, de la base al mar) · formato estándar, adaptable a cada balneario</div>
+            <div class="legend">
+              <span class="l-libre">Libre</span>
+              <span class="l-res">Reservada</span>
+              <span class="l-alq">Alquilada</span>
+              <span class="l-ina">Inactiva</span>
+            </div>
+          </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         4. MÓDULO RESERVAS Y ALQUILERES
+         ===================================================== -->
+    <section>
+      <span class="kicker">Módulo 2 · Reservas y alquileres</span>
+      <h2>Cero superposiciones, cero errores de carga</h2>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-bar">
+            <span class="dots"><span></span><span></span><span></span></span>
+            <span class="title">Reservas · ordenadas por fecha</span>
+          </div>
+          <div class="panel-body">
+            <table class="mock">
+              <thead>
+                <tr><th>Carpa</th><th>Cliente</th><th>Desde</th><th>Hasta</th><th>Estado</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>01</td><td>Juan Pérez</td><td>01/01</td><td>15/01</td><td><span class="pill alq">Alquilada</span></td></tr>
+                <tr><td>02</td><td>María Gómez</td><td>16/01</td><td>31/01</td><td><span class="pill res">Reservada</span></td></tr>
+                <tr><td>03</td><td>Juan Pérez</td><td>16/01</td><td>31/01</td><td><span class="pill res">Reservada</span></td></tr>
+                <tr><td>01</td><td>Carlos López</td><td>01/02</td><td>14/02</td><td><span class="pill alq">Alquilada</span></td></tr>
+              </tbody>
+            </table>
+            <p style="margin: 14px 0 0; color: var(--muted);">
+              🔎 Buscar: <span class="mono">"pérez"</span> → 2 resultados &nbsp;·&nbsp; 🔔 Hoy (20/01): 2 carpas ocupadas
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <ul class="benefits">
+            <li class="fragment fade-up">
+              <div class="b-icon">🛡️</div>
+              <div><strong>Imposible reservar dos veces la misma carpa</strong>
+                <span class="sub">El sistema detecta cualquier superposición de fechas antes de confirmar.</span></div>
+            </li>
+            <li class="fragment fade-up">
+              <div class="b-icon">🧹</div>
+              <div><strong>Datos del cliente prolijos</strong>
+                <span class="sub">Nombres normalizados (“juan PÉREZ” → “Juan Pérez”), DNI, teléfono y fechas validadas.</span></div>
+            </li>
+            <li class="fragment fade-up">
+              <div class="b-icon">💳</div>
+              <div><strong>Seguimiento del pago</strong>
+                <span class="sub">Reservada (señada) → Alquilada (pagada). Cancelaciones en un paso.</span></div>
+            </li>
+            <li class="fragment fade-up">
+              <div class="b-icon">🔔</div>
+              <div><strong>Listados y agenda del día</strong>
+                <span class="sub">Por fecha, por carpa, por cliente (DNI o parte del nombre) y las reservas vigentes de hoy.</span></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         5. MÓDULO ESTADÍSTICAS
+         ===================================================== -->
+    <section>
+      <span class="kicker">Módulo 3 · Estadísticas</span>
+      <h2>Números para decidir, no para adivinar</h2>
+
+      <div class="two-col">
+        <div>
+          <ul class="benefits">
+            <li class="fragment fade-up">
+              <div class="b-icon">📊</div>
+              <div><strong>Ocupación real por período</strong>
+                <span class="sub">Porcentaje de carpas activas ocupadas entre dos fechas. Ideal para fijar precios y promociones.</span></div>
+            </li>
+            <li class="fragment fade-up">
+              <div class="b-icon">🟢</div>
+              <div><strong>Carpas libres en un rango</strong>
+                <span class="sub">Respuesta inmediata para un cliente que llama: “¿tenés algo del 10 al 20?”</span></div>
+            </li>
+            <li class="fragment fade-up">
+              <div class="b-icon">🏆</div>
+              <div><strong>Cliente con más reservas</strong>
+                <span class="sub">Identificá a tus clientes fieles para premiarlos y fidelizarlos.</span></div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <div class="panel-bar">
+            <span class="dots"><span></span><span></span><span></span></span>
+            <span class="title">Estadísticas · 16/01/2027 → 31/01/2027</span>
+          </div>
+          <div class="panel-body">
+            <div class="kpis">
+              <div class="kpi">
+                <div class="label">Ocupación</div>
+                <div class="value">67%</div>
+                <div class="hint">6 de 9 carpas activas</div>
+                <div class="bar"><i></i></div>
+              </div>
+              <div class="kpi">
+                <div class="label">Carpas libres</div>
+                <div class="value">3</div>
+                <div class="hint">N° 04 · 05 · 09</div>
+              </div>
+              <div class="kpi">
+                <div class="label">Cliente top</div>
+                <div class="value">🏆</div>
+                <div class="hint">Juan Pérez · 2 reservas</div>
+              </div>
+            </div>
+            <p style="margin: 16px 0 0; color: var(--muted);">
+              Todo se calcula en el momento a partir de las reservas: sin planillas paralelas ni datos desactualizados.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         6. ARQUITECTURA TÉCNICA
+         ===================================================== -->
+    <section>
+      <span class="kicker">Bajo el capó</span>
+      <h2>Arquitectura simple, sólida y lista para crecer</h2>
+      <p class="lead" style="max-width: 100%;">Toda la lógica está escrita en <strong>Python</strong>, organizada en tres capas bien separadas.</p>
+
+      <div class="arch" style="margin-top: 22px;">
+        <div class="layer ui fragment fade-up">
+          <div class="name">🖥️ Interfaz<small>Menú interactivo</small></div>
+          <div class="desc">
+            Menú principal con submenús de Carpas, Reservas y Estadísticas. Cada dato que ingresa el usuario
+            se pide hasta que sea válido: nunca llega un valor incorrecto a la lógica.
+          </div>
+        </div>
+        <div class="layer logic fragment fade-up">
+          <div class="name">⚙️ Lógica de negocio<small>Funciones puras</small></div>
+          <div class="desc">
+            Más de 30 funciones con <strong>contrato documentado</strong> (pre y postcondiciones) y
+            <em>type hints</em>. Validación de fechas, detección de superposiciones, búsquedas y
+            ordenamiento propio. Cada función hace una sola cosa y avisa si algo falla.
+          </div>
+        </div>
+        <div class="layer data fragment fade-up">
+          <div class="name">🗂️ Datos<small>En memoria</small></div>
+          <div class="desc">
+            Dos listas: <code>carpas</code> → <code>[número, activa]</code> y
+            <code>reservas</code> → <code>[carpa, dni, nombre, teléfono, desde, hasta, estado]</code>.
+            El estado de una carpa <strong>no se guarda: se calcula</strong>, así nunca queda desactualizado.
+          </div>
+        </div>
+      </div>
+
+      <div class="chips fragment fade-up">
+        <span class="chip">🐍 Python puro, sin dependencias</span>
+        <span class="chip">🔒 Borrado lógico (sin pérdida de datos)</span>
+        <span class="chip">📄 Docstrings con contratos</span>
+        <span class="chip">🚀 Etapa 2: persistencia en archivos</span>
+        <span class="chip">🗺️ Próximo: mapa configurable según la arquitectura de cada balneario</span>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         7. CIERRE
+         ===================================================== -->
+    <section data-background-gradient="linear-gradient(135deg, #0b2545 0%, #13315c 55%, #1b6ca8 100%)">
+      <div class="closing">
+        <div class="big">🏖️</div>
+        <h1>¡Gracias!</h1>
+        <p style="font-size: 1.1em; max-width: 26em; margin: 0 auto;">
+          Menos papel, cero reservas duplicadas y una temporada bajo control.
+        </p>
+        <p style="margin-top: 48px; font-size: 1.4em; font-weight: 700; color: #f2a541;">
+          ¿Preguntas?
+        </p>
+        <p style="font-size: 0.6em; margin-top: 40px; color: rgba(255,255,255,0.6);">
+          CarpaGest · TPO Programación I · Etapa 1
+        </p>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- Reveal.js desde CDN -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    width: 1280,
+    height: 720,
+    margin: 0.06,
+    hash: true,               // permite volver a una diapositiva por URL
+    controls: true,
+    progress: true,
+    slideNumber: 'c/t',       // "diapositiva actual / total"
+    center: false,
+    transition: 'slide',
+    transitionSpeed: 'default',
+    backgroundTransition: 'fade'
+  });
+</script>
+</body>
+</html>
