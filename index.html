@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sombrita · Gestión de carpas</title>
+  <meta name="description" content="Sombrita: sistema de gestión de carpas para un balneario. TPO de Algoritmos y Estructuras de Datos I (UADE).">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0b2545; --navy-2: #13315c; --ocean: #1b6ca8; --sky: #e8f1fa;
+      --sand: #f7f3ea; --sun: #f2a541; --coral: #e5533c; --leaf: #2e9e6b;
+      --ink: #1f2933; --muted: #5f6b7a; --line: #dfe5ec; --white: #fff;
+      --radius: 16px; --shadow: 0 10px 30px rgba(11,37,69,.08);
+      --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--white); line-height: 1.55; }
+    a { color: var(--ocean); }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+    /* Nav */
+    nav { position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+    nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; gap: 16px; }
+    .brand { font-weight: 800; color: var(--navy); text-decoration: none; font-size: 1.15rem; display: flex; align-items: center; gap: 8px; }
+    nav ul { list-style: none; display: flex; gap: 22px; margin: 0; padding: 0; }
+    nav ul a { color: var(--muted); text-decoration: none; font-size: .92rem; font-weight: 500; }
+    nav ul a:hover { color: var(--navy); }
+    @media (max-width: 760px) { nav ul { display: none; } }
+
+    /* Hero */
+    .hero { background: linear-gradient(180deg, var(--sky) 0%, var(--sand) 100%); padding: 80px 0 72px; }
+    .hero .wrap { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; }
+    .kicker { display: inline-block; font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--ocean); background: var(--white); padding: 6px 14px; border-radius: 999px; margin-bottom: 18px; }
+    h1 { font-size: clamp(2.4rem, 5vw, 3.6rem); line-height: 1.05; letter-spacing: -.03em; color: var(--navy); margin: 0 0 18px; font-weight: 800; }
+    h1 span { color: var(--ocean); }
+    .lead { font-size: 1.15rem; color: var(--muted); max-width: 32em; margin: 0 0 28px; }
+    .btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 12px; font-weight: 600; text-decoration: none; font-size: .95rem; }
+    .btn.primary { background: var(--navy); color: var(--white); }
+    .btn.primary:hover { background: var(--navy-2); }
+    .btn.ghost { background: var(--white); color: var(--navy); border: 1px solid var(--line); }
+    .btn.ghost:hover { border-color: var(--ocean); }
+    @media (max-width: 860px) { .hero .wrap { grid-template-columns: 1fr; } }
+
+    /* Beach map */
+    .beach { background: var(--white); border-radius: 20px; box-shadow: var(--shadow); padding: 22px; border: 1px solid var(--line); }
+    .beach-title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+    .beach-title strong { color: var(--navy); }
+    .beach-title small { color: var(--muted); font-family: var(--mono); font-size: .78rem; }
+    .tents { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .tent { aspect-ratio: 1; border-radius: 12px; display: grid; place-items: center; font-family: var(--mono); font-weight: 600; font-size: 1rem; border: 2px solid transparent; }
+    .tent.libre { background: #eaf6f0; color: var(--leaf); border-color: #cbe9da; }
+    .tent.alquilada { background: var(--navy); color: var(--white); }
+    .tent.reservada { background: #fdf0dc; color: #a8640b; border-color: var(--sun); }
+    .tent.inactiva { background: #f1f3f6; color: #a0aab6; border-style: dashed; border-color: #cfd6df; text-decoration: line-through; }
+    .sea { margin-top: 14px; height: 34px; border-radius: 10px; background: repeating-linear-gradient(90deg, #cfe3f5 0 18px, #bcd8f0 18px 36px); display: grid; place-items: center; color: var(--ocean); font-size: .75rem; font-weight: 600; letter-spacing: .2em; }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; font-size: .8rem; color: var(--muted); }
+    .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 4px; margin-right: 6px; vertical-align: -1px; }
+
+    /* Sections */
+    section { padding: 80px 0; }
+    section.alt { background: var(--sand); }
+    h2 { font-size: clamp(1.7rem, 3.2vw, 2.3rem); color: var(--navy); letter-spacing: -.02em; margin: 0 0 10px; }
+    .sub { color: var(--muted); margin: 0 0 36px; max-width: 40em; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+    @media (max-width: 860px) { .grid3, .grid2 { grid-template-columns: 1fr; } }
+    .card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; box-shadow: var(--shadow); }
+    .card .icon { width: 44px; height: 44px; border-radius: 12px; background: var(--sky); display: grid; place-items: center; font-size: 1.3rem; margin-bottom: 14px; }
+    .card h3 { margin: 0 0 10px; color: var(--navy); font-size: 1.15rem; }
+    .card ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: .94rem; }
+    .card li { margin-bottom: 6px; }
+    .note { margin-top: 22px; font-size: .9rem; color: var(--muted); }
+    .pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: .8rem; font-weight: 600; }
+    .pill.res { background: #fdf0dc; color: #a8640b; }
+    .pill.alq { background: var(--navy); color: var(--white); }
+
+    /* Terminal */
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .tab { border: 1px solid var(--line); background: var(--white); color: var(--navy); padding: 9px 16px; border-radius: 10px; font: 600 .9rem 'Inter', sans-serif; cursor: pointer; }
+    .tab[aria-selected="true"] { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .term { background: #0d1b2a; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(11,37,69,.25); }
+    .term-bar { display: flex; align-items: center; gap: 7px; padding: 12px 16px; background: #13263b; }
+    .term-bar span { width: 11px; height: 11px; border-radius: 50%; background: #3c5a7d; }
+    .term-bar span:nth-child(1) { background: #e5533c; } .term-bar span:nth-child(2) { background: #f2a541; } .term-bar span:nth-child(3) { background: #2e9e6b; }
+    .term-bar em { margin-left: 10px; color: #8fa6bf; font-style: normal; font-family: var(--mono); font-size: .8rem; }
+    pre { margin: 0; padding: 20px 22px; color: #d7e3f0; font-family: var(--mono); font-size: .82rem; line-height: 1.45; overflow-x: auto; }
+    pre .c { color: #5fc4f0; font-weight: 600; } /* títulos en cyan, como colorama */
+    pre .p { color: #8fa6bf; }
+    pre .ok { color: #6fd39e; }
+    pre .hl { color: #f2c27a; }
+    .panel[hidden] { display: none; }
+
+    /* Data model / code */
+    .code { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .code h4 { margin: 0; padding: 12px 18px; border-bottom: 1px solid var(--line); font-size: .85rem; color: var(--navy); background: var(--sky); }
+    .code pre { color: var(--ink); font-size: .8rem; }
+    .code pre .k { color: var(--ocean); } .code pre .s { color: #a8640b; } .code pre .cm { color: #8b96a3; }
+
+    /* Architecture */
+    .arch { display: flex; flex-direction: column; align-items: center; gap: 0; }
+    .node { background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 10px 18px; font-family: var(--mono); font-size: .88rem; color: var(--navy); font-weight: 600; box-shadow: var(--shadow); text-align: center; }
+    .node.main { background: var(--navy); color: var(--white); }
+    .node.base { background: var(--sky); }
+    .row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .arrow { color: var(--muted); font-size: 1.1rem; line-height: 1; padding: 8px 0; }
+    .steps { counter-reset: s; list-style: none; padding: 0; margin: 0; }
+    .steps li { counter-increment: s; position: relative; padding: 14px 16px 14px 56px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; font-size: .94rem; }
+    .steps li::before { content: counter(s); position: absolute; left: 14px; top: 12px; width: 28px; height: 28px; border-radius: 8px; background: var(--sky); color: var(--ocean); display: grid; place-items: center; font-weight: 700; font-size: .85rem; }
+
+    /* Rules */
+    .rules { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; list-style: none; padding: 0; margin: 0; }
+    .rules li { background: var(--white); border: 1px solid var(--line); border-left: 4px solid var(--ocean); border-radius: 10px; padding: 14px 16px; font-size: .93rem; }
+    @media (max-width: 760px) { .rules { grid-template-columns: 1fr; } }
+
+    /* Stats strip */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 40px; }
+    .stat { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 18px; text-align: center; }
+    .stat b { display: block; font-size: 1.9rem; color: var(--navy); letter-spacing: -.02em; }
+    .stat span { color: var(--muted); font-size: .85rem; }
+    @media (max-width: 760px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+
+    footer { background: var(--navy); color: #b9cbe0; padding: 40px 0; font-size: .9rem; }
+    footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    footer a { color: var(--white); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#">⛱️ Sombrita</a>
+    <ul>
+      <li><a href="#funcionalidades">Funcionalidades</a></li>
+      <li><a href="#demo">Cómo se ve</a></li>
+      <li><a href="#datos">Datos</a></li>
+      <li><a href="#arquitectura">Arquitectura</a></li>
+      <li><a href="#usar">Usarlo</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <span class="kicker">TPO · Algoritmos y Estructuras de Datos I · UADE</span>
+      <h1>Las carpas del balneario, <span>bajo control</span>.</h1>
+      <p class="lead">Sombrita es un sistema de consola en Python para registrar carpas, reservas y alquileres, sin superposiciones de fechas y con estadísticas de ocupación.</p>
+      <div class="btns">
+        <a class="btn primary" href="https://github.com/gonzalezmkarend/ProyectoSombrita-TPO">Ver el código en GitHub</a>
+        <a class="btn ghost" href="docs/presentacion/presentacion.html">Abrir la presentación</a>
+      </div>
+    </div>
+
+    <div class="beach" aria-label="Estado de las carpas en distintas fechas con los datos de ejemplo">
+      <div class="beach-title"><strong>Balneario · datos de ejemplo</strong><small id="beach-date">20/01/2027</small></div>
+      <div class="tents" id="tents"></div>
+      <div class="sea">MAR</div>
+      <div class="legend">
+        <span><i style="background:#eaf6f0;border:1px solid #cbe9da"></i>Libre</span>
+        <span><i style="background:#fdf0dc;border:1px solid var(--sun)"></i>Reservada</span>
+        <span><i style="background:var(--navy)"></i>Alquilada</span>
+        <span><i style="background:#f1f3f6;border:1px dashed #cfd6df"></i>Inactiva</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="funcionalidades">
+  <div class="wrap">
+    <h2>Qué hace</h2>
+    <p class="sub">Tres menús que cubren la operación diaria de un balneario.</p>
+    <div class="grid3">
+      <div class="card">
+        <div class="icon">⛱️</div>
+        <h3>Carpas</h3>
+        <ul>
+          <li>Registrar y listar carpas</li>
+          <li>Cambiar el número</li>
+          <li>Activar o inactivar (borrado lógico)</li>
+          <li>Consultar el estado por fechas</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="icon">📅</div>
+        <h3>Reservas y alquileres</h3>
+        <ul>
+          <li>Registrar con alta de cliente</li>
+          <li>Cancelar y cambiar el estado</li>
+          <li>Listar por fecha o por carpa</li>
+          <li>Buscar por cliente y ver las del día</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="icon">📊</div>
+        <h3>Estadísticas</h3>
+        <ul>
+          <li>Porcentaje de ocupación en un rango</li>
+          <li>Carpas libres en un rango</li>
+          <li>Cliente con más reservas</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">Una reserva está <span class="pill res">reservada</span> (señada o sin pagar); un alquiler está <span class="pill alq">alquilada</span> (pagado). La gestión de cobros queda fuera del alcance.</p>
+
+    <div class="stats">
+      <div class="stat"><b>3</b><span>menús</span></div>
+      <div class="stat"><b>15</b><span>operaciones</span></div>
+      <div class="stat"><b>143</b><span>tests con pytest</span></div>
+      <div class="stat"><b>0</b><span>clases y globales</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="demo" class="alt">
+  <div class="wrap">
+    <h2>Cómo se ve</h2>
+    <p class="sub">Salida real del programa con los datos de ejemplo que se generan en la primera ejecución.</p>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-panel="p-menu">Menú principal</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="p-carpas">Listar carpas</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="p-reservas">Reservas por carpa</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="p-stats">Estadísticas</button>
+    </div>
+    <div class="term">
+      <div class="term-bar"><span></span><span></span><span></span><em>python main.py</em></div>
+<pre class="panel" id="p-menu"><span class="c">===== Sombrita: gestión de carpas del balneario =====</span>
+╭──────────┬───────────────────────╮
+│   Opción │ Descripción           │
+├──────────┼───────────────────────┤
+│        1 │ Carpas                │
+│        2 │ Reservas y alquileres │
+│        3 │ Estadísticas          │
+│        0 │ Salir                 │
+╰──────────┴───────────────────────╯
+<span class="p">Opción:</span> <span class="hl">1</span></pre>
+<pre class="panel" id="p-carpas" hidden><span class="c">--- Carpas ---</span>
+<span class="p">Opción:</span> <span class="hl">2</span>
+╭─────────┬──────────╮
+│   Carpa │ Estado   │
+├─────────┼──────────┤
+│       1 │ activa   │
+│       2 │ activa   │
+│       3 │ activa   │
+│       4 │ activa   │
+│       5 │ activa   │
+│       6 │ activa   │
+│       7 │ activa   │
+│       8 │ activa   │
+│       9 │ activa   │
+│      10 │ inactiva │
+╰─────────┴──────────╯</pre>
+<pre class="panel" id="p-reservas" hidden><span class="c">--- Reservas y alquileres ---</span>
+<span class="p">Opción:</span> <span class="hl">5</span>
+╭─────────┬──────────┬──────────────┬────────────┬────────────┬───────────╮
+│   Carpa │      DNI │ Cliente      │ Desde      │ Hasta      │ Estado    │
+├─────────┼──────────┼──────────────┼────────────┼────────────┼───────────┤
+│       1 │ 30111222 │ Juan Pérez   │ 01/01/2027 │ 15/01/2027 │ alquilada │
+│       1 │ 35555666 │ Carlos López │ 01/02/2027 │ 14/02/2027 │ alquilada │
+│       2 │ 28333444 │ María Gómez  │ 16/01/2027 │ 31/01/2027 │ reservada │
+│       3 │ 30111222 │ Juan Pérez   │ 16/01/2027 │ 31/01/2027 │ reservada │
+╰─────────┴──────────┴──────────────┴────────────┴────────────┴───────────╯</pre>
+<pre class="panel" id="p-stats" hidden><span class="c">--- Estadísticas ---</span>
+<span class="p">Opción:</span> <span class="hl">1</span>
+<span class="p">Fecha desde (dd/mm/aaaa):</span> <span class="hl">01/01/2027</span>
+<span class="p">Fecha hasta (dd/mm/aaaa):</span> <span class="hl">31/01/2027</span>
+Ocupación entre 01/01/2027 y 31/01/2027: <span class="ok">33.3%</span>
+
+<span class="p">Opción:</span> <span class="hl">3</span>
+Juan Pérez (DNI 30111222) con 2 reserva(s).</pre>
+    </div>
+  </div>
+</section>
+
+<section id="datos">
+  <div class="wrap">
+    <h2>Modelo de datos</h2>
+    <p class="sub">Diccionarios, listas, tuplas y conjuntos, guardados en un único archivo <code>datos/sombrita.json</code>.</p>
+    <div class="grid2">
+      <div class="code">
+        <h4>Estructuras</h4>
+<pre><span class="cm"># Número de carpa -> activa</span>
+carpas: <span class="k">dict[int, bool]</span> = {1: True, 10: False}
+
+<span class="cm"># DNI -> datos del cliente</span>
+clientes: <span class="k">dict[int, dict]</span> = {
+    30111222: {<span class="s">"nombre"</span>: <span class="s">"Juan Pérez"</span>,
+               <span class="s">"telefono"</span>: <span class="s">"11-5555-1111"</span>},
+}
+
+<span class="cm"># Una carpa puede tener varias reservas</span>
+reservas: <span class="k">list[dict]</span> = [
+    {<span class="s">"carpa"</span>: 1, <span class="s">"dni"</span>: 30111222,
+     <span class="s">"desde"</span>: <span class="s">"01/01/2027"</span>, <span class="s">"hasta"</span>: <span class="s">"15/01/2027"</span>,
+     <span class="s">"estado"</span>: <span class="s">"alquilada"</span>},
+]
+
+ESTADOS_RESERVA: <span class="k">tuple[str, str]</span> = (<span class="s">"reservada"</span>, <span class="s">"alquilada"</span>)</pre>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:18px">
+          <h3>Decisiones de diseño</h3>
+          <ul>
+            <li>Fechas como texto <code>dd/mm/aaaa</code>, convertidas a <code>datetime</code> para validar y comparar.</li>
+            <li><code>set</code> para carpas ocupadas y DNI distintos.</li>
+            <li>Ordenamiento con <b>quicksort recursivo</b>.</li>
+            <li>Si el JSON está dañado, se guarda una copia <code>.corrupto</code> y se usan datos de ejemplo.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Convenciones</h3>
+          <ul>
+            <li>Funciones con prefijo <code>_</code>, salvo <code>main()</code> y los tests.</li>
+            <li>Docstring con Contrato, Precondiciones y Postcondiciones.</li>
+            <li>Type hints en todo el programa.</li>
+            <li>Sin clases ni variables globales.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="arquitectura" class="alt">
+  <div class="wrap">
+    <h2>Arquitectura</h2>
+    <p class="sub">Las dependencias entre módulos van en un solo sentido, y la lógica está separada de la entrada y salida.</p>
+    <div class="grid2">
+      <div class="arch">
+        <div class="node main">main.py</div>
+        <div class="arrow">↓</div>
+        <div class="row">
+          <div class="node">menu_carpas</div>
+          <div class="node">menu_reservas</div>
+          <div class="node">menu_estadisticas</div>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="node">persistencia</div>
+        <div class="arrow">↓</div>
+        <div class="node base">comunes</div>
+        <p class="note" style="text-align:center">menu_estadisticas usa directamente comunes; main.py también usa persistencia y comunes.</p>
+      </div>
+      <div>
+        <h3 style="color:var(--navy);margin-top:0">Flujo de una operación</h3>
+        <ol class="steps">
+          <li><code>main()</code> carga carpas, clientes y reservas, y los pasa por parámetro al menú elegido.</li>
+          <li>El menú lee los datos del usuario y llama a una función de lógica, que no usa <code>input()</code> ni <code>print()</code>.</li>
+          <li>El menú muestra el resultado y, si hubo cambios, guarda el archivo.</li>
+          <li>Al salir o con <code>Ctrl+C</code>, <code>main()</code> guarda los datos y termina.</li>
+        </ol>
+      </div>
+    </div>
+
+    <h3 style="color:var(--navy);margin:48px 0 16px">Reglas de negocio</h3>
+    <ul class="rules">
+      <li>Número de carpa y DNI mayores a 0 y únicos.</li>
+      <li>Las carpas no se eliminan: se inactivan.</li>
+      <li>Una carpa con reservas no se puede inactivar.</li>
+      <li>Dos reservas de una carpa no pueden compartir ningún día.</li>
+      <li>Una reserva requiere carpa activa, cliente existente y <code>desde ≤ hasta</code>.</li>
+      <li>Una reserva se identifica por carpa, DNI y fecha de inicio.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="usar">
+  <div class="wrap">
+    <h2>Probarlo</h2>
+    <p class="sub">Requiere Python 3.10 o superior. Los comandos se ejecutan desde la raíz del repositorio.</p>
+    <div class="term">
+      <div class="term-bar"><span></span><span></span><span></span><em>terminal</em></div>
+<pre><span class="p">$</span> git clone https://github.com/gonzalezmkarend/ProyectoSombrita-TPO
+<span class="p">$</span> cd ProyectoSombrita-TPO
+<span class="p">$</span> python -m pip install -r requirements.txt
+<span class="p">$</span> python main.py          <span class="p"># la primera vez crea datos/sombrita.json</span>
+<span class="p">$</span> python -m pytest        <span class="p"># corre las pruebas</span></pre>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>⛱️ Sombrita · Trabajo Práctico Obligatorio · Algoritmos y Estructuras de Datos I · UADE</span>
+    <a href="https://github.com/gonzalezmkarend/ProyectoSombrita-TPO">Repositorio en GitHub</a>
+  </div>
+</footer>
+
+<script>
+  // Tabs de la sección "Cómo se ve"
+  document.querySelectorAll('.tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('.tab').forEach(function (t) { t.setAttribute('aria-selected', 'false'); });
+      document.querySelectorAll('.term .panel').forEach(function (p) { p.hidden = true; });
+      tab.setAttribute('aria-selected', 'true');
+      document.getElementById(tab.dataset.panel).hidden = false;
+    });
+  });
+
+  // Mapa de carpas: mismos datos de ejemplo que _cargar_datos_iniciales()
+  (function () {
+    var carpas = {1:true,2:true,3:true,4:true,5:true,6:true,7:true,8:true,9:true,10:false};
+    var reservas = [
+      {carpa:1, desde:'01/01/2027', hasta:'15/01/2027', estado:'alquilada'},
+      {carpa:2, desde:'16/01/2027', hasta:'31/01/2027', estado:'reservada'},
+      {carpa:3, desde:'16/01/2027', hasta:'31/01/2027', estado:'reservada'},
+      {carpa:1, desde:'01/02/2027', hasta:'14/02/2027', estado:'alquilada'}
+    ];
+    var fechas = ['10/01/2027', '20/01/2027', '05/02/2027'];
+    var aFecha = function (s) { var p = s.split('/'); return new Date(+p[2], p[1] - 1, +p[0]); };
+    var cont = document.getElementById('tents');
+    var etiqueta = document.getElementById('beach-date');
+    var i = 0;
+    function pintar() {
+      var dia = aFecha(fechas[i]);
+      etiqueta.textContent = fechas[i];
+      cont.innerHTML = '';
+      Object.keys(carpas).forEach(function (n) {
+        var estado = carpas[n] ? 'libre' : 'inactiva';
+        reservas.forEach(function (r) {
+          if (r.carpa == n && aFecha(r.desde) <= dia && dia <= aFecha(r.hasta)) estado = r.estado;
+        });
+        var d = document.createElement('div');
+        d.className = 'tent ' + estado;
+        d.textContent = n;
+        d.title = 'Carpa ' + n + ': ' + estado;
+        cont.appendChild(d);
+      });
+      i = (i + 1) % fechas.length;
+    }
+    pintar();
+    setInterval(pintar, 2500);
+  })();
+</script>
+</body>
+</html>
